@@ -80,7 +80,7 @@ class MyDbDriver(DbDriver):
         else:
             userID = random.randint(1,100000)
             tutorID = random.randint(1,100000)
-            payementID = random.randint(1,100000)
+            paymentID = random.randint(1,100000)
             expertize = input("Enter expertize: ")
             offlinePayment = input("Enter offline payment: ")
             onlinePayment = input("Enter online payment: ")
@@ -99,14 +99,14 @@ class MyDbDriver(DbDriver):
                 "userID": userID,
                 "expertize":expertize
             }
-            offlinePayementData = {
-                "id":payementID,
+            offlinepaymentData = {
+                "id":paymentID,
                 "amount": offlinePayment,
                 "userID": userID
                 
             }
             onlinePaymentData = {
-                "id":payementID,
+                "id":paymentID,
                 "amount": onlinePayment,
                 "userID": userID
                 
@@ -133,7 +133,7 @@ class MyDbDriver(DbDriver):
 
                 try:
                     query = "INSERT INTO offline_payments (id, amount, user_id) VALUES (%(id)s, %(amount)s, %(userID)s)"
-                    self.cursor.execute(query, offlinePayementData)
+                    self.cursor.execute(query, offlinepaymentData)
                     self.connection.commit()
                     print("Record inserted successfully into table Offline Payments table")
 
@@ -141,7 +141,7 @@ class MyDbDriver(DbDriver):
                     print("Failed to insert record into table: {}".format(error))
 
                 try:
-                    query = "INSERT INTO  online_payements (id, amount, user_id) VALUES (%(id)s, %(amount)s, %(userID)s)"
+                    query = "INSERT INTO  online_payments (id, amount, user_id) VALUES (%(id)s, %(amount)s, %(userID)s)"
                     self.cursor.execute(query, onlinePaymentData)
                     self.connection.commit()
                     print("Record inserted successfully into table Online Payments table")
@@ -154,8 +154,19 @@ class MyDbDriver(DbDriver):
                 
 
     def select_from(self, sql):
-        # Implementation for executing a SELECT query
-        pass
+        if self.cursor:
+            try:
+                self.cursor.execute(sql)
+                result = self.cursor.fetchall()
+                
+                for row in result:
+                    print(row)
+
+            except mysql.connector.Error as error:
+                print("Failed to select record from table: {}".format(error))
+        
+        else:
+            print("No active connection")
 
 
 

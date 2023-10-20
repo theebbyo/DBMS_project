@@ -26,13 +26,15 @@ create table teachers (
 );
 
 
-create table online_payements (
+
+create table offline_payments(
     id int  primary key,
     amount int not null,
     user_id int not null,
     foreign key (user_id) references users(id)
 );
-create table offline_payments(
+
+create table online_payments(
     id int  primary key,
     amount int not null,
     user_id int not null,
