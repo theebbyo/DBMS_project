@@ -24,3 +24,17 @@ create table teachers (
     expertize varchar(255) not null,
     foreign key (user_id) references users(id)
 );
+
+
+create table online_payements (
+    id int  primary key,
+    amount int not null,
+    user_id int not null,
+    foreign key (user_id) references users(id)
+);
+create table offline_payments(
+    id int  primary key,
+    amount int not null,
+    user_id int not null,
+    foreign key (user_id) references users(id)
+);

@@ -64,6 +64,7 @@ class MyDbDriver(DbDriver):
                     query = "INSERT INTO users (id, name, email, password, phone, role) VALUES (%(id)s, %(name)s, %(email)s, %(password)s, %(phone)s, %(role)s)"
                     self.cursor.execute(query, userData)
                     self.connection.commit()
+                    print("Record inserted successfully into table Users table")
                 except mysql.connector.Error as error:
                     print("Failed to insert record into table: {}".format(error))
                 
@@ -71,7 +72,7 @@ class MyDbDriver(DbDriver):
                     query = "INSERT INTO students (id, institution, address, user_id) VALUES (%(id)s, %(institution)s, %(address)s, %(userID)s)"
                     self.cursor.execute(query, studentData)
                     self.connection.commit()
-                    print(f"{self.cursor.rowcount} record inserted.")
+                    print("Record inserted successfully into table Students table")
 
                 except:
                     print("Failed to insert record into table: {}".format(error))
@@ -79,7 +80,10 @@ class MyDbDriver(DbDriver):
         else:
             userID = random.randint(1,100000)
             tutorID = random.randint(1,100000)
+            payementID = random.randint(1,100000)
             expertize = input("Enter expertize: ")
+            offlinePayment = input("Enter offline payment: ")
+            onlinePayment = input("Enter online payment: ")
             userData = {
                 "id":userID,
                 "name": name,
@@ -95,12 +99,25 @@ class MyDbDriver(DbDriver):
                 "userID": userID,
                 "expertize":expertize
             }
+            offlinePayementData = {
+                "id":payementID,
+                "amount": offlinePayment,
+                "userID": userID
+                
+            }
+            onlinePaymentData = {
+                "id":payementID,
+                "amount": onlinePayment,
+                "userID": userID
+                
+            }
             
             if self.cursor:
                 try:
                     query = "INSERT INTO users (id, name, email, password, phone, role) VALUES (%(id)s, %(name)s, %(email)s, %(password)s, %(phone)s, %(role)s)"
                     self.cursor.execute(query, userData)
                     self.connection.commit()
+                    print("Record inserted successfully into table Users table")
                 except mysql.connector.Error as error:
                     print("Failed to insert record into table: {}".format(error))
                 
@@ -108,10 +125,32 @@ class MyDbDriver(DbDriver):
                     query = "INSERT INTO teachers (id, institution, user_id, expertize) VALUES (%(id)s, %(institution)s, %(userID)s, %(expertize)s)"
                     self.cursor.execute(query, tutorData)
                     self.connection.commit()
-                    print(f"{self.cursor.rowcount} record inserted.")
+                    print("Record inserted successfully into table Teachers table")
 
                 except:
                     print("Failed to insert record into table: {}".format(error))
+                
+
+                try:
+                    query = "INSERT INTO offline_payments (id, amount, user_id) VALUES (%(id)s, %(amount)s, %(userID)s)"
+                    self.cursor.execute(query, offlinePayementData)
+                    self.connection.commit()
+                    print("Record inserted successfully into table Offline Payments table")
+
+                except:
+                    print("Failed to insert record into table: {}".format(error))
+
+                try:
+                    query = "INSERT INTO  online_payements (id, amount, user_id) VALUES (%(id)s, %(amount)s, %(userID)s)"
+                    self.cursor.execute(query, onlinePaymentData)
+                    self.connection.commit()
+                    print("Record inserted successfully into table Online Payments table")
+
+                except:
+                    print("Failed to insert record into table: {}".format(error))        
+
+            
+                
                 
 
     def select_from(self, sql):
