@@ -46,7 +46,7 @@ def selection():
                         print("1. For select teachers from BUET")
                         print("2. For select teachers from Dhaka University")
                         print("3. For select teachers from Dhaka Medical College")
-                        print("5. Exit")
+                        print("4. Exit")
                         choice = int(input("Enter choice: "))
                         if choice == 1:
                             selection_via_uvinersity("BUET")
@@ -86,12 +86,7 @@ def selection():
             break
 
 
-   
 
-
-
-
-    
 
 if __name__ == "__main__":
     my_db = MyDbDriver()
