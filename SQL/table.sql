@@ -34,9 +34,28 @@ create table offline_payments(
     foreign key (user_id) references users(id)
 );
 
+
 create table online_payments(
     id int  primary key,
     amount int not null,
     user_id int not null,
     foreign key (user_id) references users(id)
 );
+-- # below two table not inserted yet
+create table requests(
+    id int  primary key,
+    student_id int not null,
+    teacher_id int not null,
+    foreign key (student_id) references users(id),
+    foreign key (teacher_id) references users(id)
+);
+
+create table tuition(
+    id int primary key,
+    student_id int,
+    teacher_id int,
+    online boolean default false,
+    offline boolean default false,
+    foreign key (student_id) references users(id),
+    foreign key (teacher_id) references users(id)
+)

@@ -1,4 +1,24 @@
+import bcrypt
 from mysqlDriver import MyDbDriver
+
+
+
+
+def sign_in():
+    email = input("Enter email: ")
+    password = input("Enter password: ")
+    while True:
+        role = my_db.login(email, password)
+        if role == "TEACHER" or role == "STUDENT":
+            print("Login successfull")
+            return role
+        else:
+            print("Invalid email or password")
+            email = input("Enter email: ")
+            password = input("Enter password: ")
+
+    
+    
 
 
 
@@ -20,15 +40,15 @@ def insertion():
 
 
 def selecion_all_teachers():
-    sql = "SELECT users.name, users.email, users.phone, teachers.institution, teachers.expertize, offline_payments.amount, online_payments.amount FROM users INNER JOIN teachers ON users.id = teachers.user_id inner JOIN offline_payments ON users.id = offline_payments.user_id inner join online_payments ON users.id = online_payments.user_id"
+    sql = "SELECT users.id, users.name, users.email, users.phone, teachers.institution, teachers.expertize, offline_payments.amount, online_payments.amount FROM users INNER JOIN teachers ON users.id = teachers.user_id inner JOIN offline_payments ON users.id = offline_payments.user_id inner join online_payments ON users.id = online_payments.user_id"
     my_db.select_from(sql)
 
 def selection_via_uvinersity(university:str):
-    sql = f"SELECT users.name, users.email, users.phone, teachers.institution, teachers.expertize, offline_payments.amount, online_payments.amount FROM users INNER JOIN teachers ON users.id = teachers.user_id inner JOIN offline_payments ON users.id = offline_payments.user_id inner join online_payments ON users.id = online_payments.user_id WHERE teachers.institution = '{university}'"
+    sql = f"SELECT users.id, users.name, users.email, users.phone, teachers.institution, teachers.expertize, offline_payments.amount, online_payments.amount FROM users INNER JOIN teachers ON users.id = teachers.user_id inner JOIN offline_payments ON users.id = offline_payments.user_id inner join online_payments ON users.id = online_payments.user_id WHERE teachers.institution = '{university}'"
     my_db.select_from(sql)
 
 def selection_via_expertize(expertize:str):
-    sql = f"SELECT users.name, users.email, users.phone, teachers.institution, teachers.expertize, offline_payments.amount, online_payments.amount FROM users INNER JOIN teachers ON users.id = teachers.user_id inner JOIN offline_payments ON users.id = offline_payments.user_id inner join online_payments ON users.id = online_payments.user_id WHERE teachers.expertize = '{expertize}'"
+    sql = f"SELECT users.id, users.name, users.email, users.phone, teachers.institution, teachers.expertize, offline_payments.amount, online_payments.amount FROM users INNER JOIN teachers ON users.id = teachers.user_id inner JOIN offline_payments ON users.id = offline_payments.user_id inner join online_payments ON users.id = online_payments.user_id WHERE teachers.expertize = '{expertize}'"
     my_db.select_from(sql)
 
 def selection():
@@ -50,6 +70,7 @@ def selection():
                         choice = int(input("Enter choice: "))
                         if choice == 1:
                             selection_via_uvinersity("BUET")
+
                         elif choice == 2:
                             selection_via_uvinersity("Dhaka University")
 
@@ -88,9 +109,21 @@ def selection():
 
 
 
+
+
+
+
+
+
+
+
+
+
 if __name__ == "__main__":
     my_db = MyDbDriver()
     my_db.set_connection()
+
+
     
     while True:
         print("1. For insertion operation")
@@ -100,8 +133,10 @@ if __name__ == "__main__":
         if choice == 1:
             insertion()
         elif choice == 2:
-            selection()
-                
+            if sign_in() == "STUDENT":
+                selection()
+            else:
+                print("You are not a student")
 
         elif choice == 3:
             break

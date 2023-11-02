@@ -169,5 +169,35 @@ class MyDbDriver(DbDriver):
             print("No active connection")
 
 
+    def login(self, email, password):
+        if self.cursor:
+            try:
+                query = "SELECT * FROM users WHERE email = %(email)s"
+                self.cursor.execute(query, {"email": email})
+                result = self.cursor.fetchone()
+
+               
+
+                if result:
+                    if bcrypt.checkpw(password.encode('utf-8'), result[3].encode('utf-8')):
+                        if result[5] == "STUDENT":
+                            print("Welcome Student")
+                            return result[5]
+                        
+                        else:
+                            print("Welcome Teacher")
+                            return result[5]
+                      
+                   
+                       
+                
+
+               
+            except mysql.connector.Error as error:
+                print("Failed to select record from table: {}".format(error))
+        else:
+            print("No active connection")
+
+
 
 

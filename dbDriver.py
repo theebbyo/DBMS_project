@@ -16,3 +16,6 @@ class DbDriver(ABC):
     @abstractmethod
     def select_from(self, sql):
         pass
+
+    def login(self, email, password):
+        pass
