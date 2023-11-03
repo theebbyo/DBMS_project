@@ -154,6 +154,13 @@ class MyDbDriver(DbDriver):
                     selectQuery = "SELECT * FROM requests WHERE teacher_id = %(teacher_id)s AND student_id = %(student_id)s"
                     self.cursor.execute(selectQuery, requestData)
                     result = self.cursor.fetchone()
+                    selectQuery = "SELECT * FROM tuitions WHERE teacher_id = %(teacher_id)s AND student_id = %(student_id)s"
+                    self.cursor.execute(selectQuery, requestData)
+                    result2 = self.cursor.fetchone()
+                    if result2:
+                        print("Already in tuition")
+                        return
+
                     if result:
                         print("Already requested")
                         return
