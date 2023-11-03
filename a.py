@@ -92,7 +92,7 @@ def selection_via_expertize(expertize:str, studentID:int = -1):
 
     
 
-def selection(studentID:int = -1):
+def selectionStudent(studentID:int = -1):
     while True:
         print("1. For select all the teachers")
         print("2. For select teachers from different university")
@@ -147,6 +147,38 @@ def selection(studentID:int = -1):
         elif choice == 4:
             break
 
+
+def selectionTeacher(teacherID:int = -1):
+    while True:
+        print("1. For see all the requests")
+        print("2. Exit")
+        choice = int(input("Enter choice: "))
+        if choice == 1:
+            sql = f"SELECT users.id, users.name, users.email, users.phone, students.institution, students.address FROM requests INNER JOIN users ON requests.student_id = users.id INNER JOIN students ON requests.student_id = students.user_id WHERE requests.teacher_id = {teacherID}"
+            my_db.select_from(sql)
+
+            print("1. For accept request")
+            print("2. For reject request")
+            print("3. Exit")
+            choice = int(input("Enter choice: "))
+            if choice == 1:
+                studentID = int(input("Enter student ID: "))
+                my_db.insert_into("tuitions", teacherID, studentID,1)
+                
+            elif choice == 2:
+                studentID = int(input("Enter student ID: "))
+                my_db.insert_into("tuitions", teacherID, studentID) 
+                
+            elif choice == 3:
+                pass
+            else:
+                print("Invalid choice")
+        elif choice == 2:
+            break
+        else:
+            print("Invalid choice")
+
+
 if __name__ == "__main__":
     my_db = MyDbDriver()
     my_db.set_connection()
@@ -162,10 +194,9 @@ if __name__ == "__main__":
             request:utils.Request
             request = sign_in()
             if request.role == "STUDENT":
-                selection(request.id)
+                selectionStudent(request.id)
             else:
-                print("You are not a student")
-
+                selectionTeacher(request.id)
         elif choice == 3:
             break
         else:

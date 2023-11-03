@@ -9,6 +9,8 @@ CREATE TABLE users (
 
 );
 
+
+
 create table students (
     id int  primary key,
     institution varchar(255) not null,
@@ -16,6 +18,8 @@ create table students (
     user_id int not null,
     foreign key (user_id) references users(id)
 );
+
+
 
 create table teachers (
     id int  primary key,
@@ -35,6 +39,8 @@ create table payments(
     foreign key (user_id) references users(id)
 );
 
+
+
 create table requests(
     id int  primary key,
     teacher_id int not null,
@@ -42,11 +48,15 @@ create table requests(
     foreign key (student_id) references users(id),
     foreign key (teacher_id) references users(id)
 );
--- # below two table not inserted yet
-create table tuition(
+
+
+
+
+create table tuitions(
     id int primary key,
-    student_id int,
+    
     teacher_id int,
+    student_id int,
     foreign key (student_id) references users(id),
     foreign key (teacher_id) references users(id)
-)
+);

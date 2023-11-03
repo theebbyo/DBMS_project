@@ -31,7 +31,7 @@ class MyDbDriver(DbDriver):
 
 
 
-    def insert_into(self, table, teacherID = 1, studentID = 1):
+    def insert_into(self, table, teacherID = -1, studentID = -1, type = -1):
         
         if table == "students":
             name = input("Enter name: ")
@@ -141,7 +141,7 @@ class MyDbDriver(DbDriver):
                 except:
                     print("Failed to insert record into table: {}".format(error))
                     
-        else:
+        elif table == "requests":
             id = random.randint(1,100000)
             requestData = {
                 "id":id,
@@ -162,9 +162,37 @@ class MyDbDriver(DbDriver):
                         self.cursor.execute(query, requestData)
                         self.connection.commit()
                         print("Record inserted successfully into table Requests table") 
+                        print("Request sent successfully")
+                except mysql.connector.Error as error:
+                    print("Failed to insert record into table: {}".format(error))
+            
+        elif table == "tuitions":
+            id = random.randint(1,100000)
+            tuitionData = {
+                "id":id,
+                "teacher_id": teacherID,
+                "student_id": studentID
+            }
+
+            if self.cursor:  
+                try:
+                    if type == 1:
+                        query = "INSERT INTO tuitions (id, teacher_id, student_id) VALUES (%(id)s, %(teacher_id)s, %(student_id)s)"
+                        self.cursor.execute(query, tuitionData)
+                        self.connection.commit()
+                        print("Record inserted successfully into table Tuitions table")
+
+                    deleteQuery = "DELETE FROM requests WHERE teacher_id = %(teacher_id)s AND student_id = %(student_id)s"
+                    self.cursor.execute(deleteQuery, tuitionData)
+                    self.connection.commit()
+                    print("Record deleted successfully from table Requests table")
+                    if type == -1:
+                        print("Request removed successfully")
                 except mysql.connector.Error as error:
                     print("Failed to insert record into table: {}".format(error))
 
+
+                
                 
                 
 
