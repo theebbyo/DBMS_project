@@ -4,7 +4,7 @@ from dbDriver import DbDriver
 
 import mysql.connector
 
-
+import utils
 
 
 class MyDbDriver(DbDriver):
@@ -31,14 +31,15 @@ class MyDbDriver(DbDriver):
 
 
 
-    def insert_into(self, table):
-        name = input("Enter name: ")
-        email = input("Enter email: ")
-        password = input("Enter password: ")
-        phone = input("Enter phone: ")
-        institution = input("Enter institute: ")
-
+    def insert_into(self, table, teacherID = 1, studentID = 1):
+        
         if table == "students":
+            name = input("Enter name: ")
+            email = input("Enter email: ")
+            password = input("Enter password: ")
+            phone = input("Enter phone: ")
+            institution = input("Enter institute: ")
+
             
             address = input("Enter address: ")
             userID = random.randint(1,100000)
@@ -77,13 +78,18 @@ class MyDbDriver(DbDriver):
                 except:
                     print("Failed to insert record into table: {}".format(error))
         
-        else:
+        elif table == "teachers":
+            name = input("Enter name: ")
+            email = input("Enter email: ")
+            password = input("Enter password: ")
+            phone = input("Enter phone: ")
+            institution = input("Enter institute: ")
+
             userID = random.randint(1,100000)
             tutorID = random.randint(1,100000)
             paymentID = random.randint(1,100000)
             expertize = input("Enter expertize: ")
-            offlinePayment = input("Enter offline payment: ")
-            onlinePayment = input("Enter online payment: ")
+            Payment = input("Enter payment: ")
             userData = {
                 "id":userID,
                 "name": name,
@@ -99,18 +105,13 @@ class MyDbDriver(DbDriver):
                 "userID": userID,
                 "expertize":expertize
             }
-            offlinepaymentData = {
+            paymentData = {
                 "id":paymentID,
-                "amount": offlinePayment,
+                "amount": Payment,
                 "userID": userID
                 
             }
-            onlinePaymentData = {
-                "id":paymentID,
-                "amount": onlinePayment,
-                "userID": userID
-                
-            }
+            
             
             if self.cursor:
                 try:
@@ -132,24 +133,38 @@ class MyDbDriver(DbDriver):
                 
 
                 try:
-                    query = "INSERT INTO offline_payments (id, amount, user_id) VALUES (%(id)s, %(amount)s, %(userID)s)"
-                    self.cursor.execute(query, offlinepaymentData)
+                    query = "INSERT INTO payments (id, amount, user_id) VALUES (%(id)s, %(amount)s, %(userID)s)"
+                    self.cursor.execute(query, paymentData)
                     self.connection.commit()
-                    print("Record inserted successfully into table Offline Payments table")
+                    print("Record inserted successfully into table Payments table")
 
                 except:
                     print("Failed to insert record into table: {}".format(error))
+                    
+        else:
+            id = random.randint(1,100000)
+            requestData = {
+                "id":id,
+                "teacher_id": teacherID,
+                "student_id": studentID
+            }
 
+            if self.cursor:  
                 try:
-                    query = "INSERT INTO  online_payments (id, amount, user_id) VALUES (%(id)s, %(amount)s, %(userID)s)"
-                    self.cursor.execute(query, onlinePaymentData)
-                    self.connection.commit()
-                    print("Record inserted successfully into table Online Payments table")
+                    selectQuery = "SELECT * FROM requests WHERE teacher_id = %(teacher_id)s AND student_id = %(student_id)s"
+                    self.cursor.execute(selectQuery, requestData)
+                    result = self.cursor.fetchone()
+                    if result:
+                        print("Already requested")
+                        return
+                    else:
+                        query = "INSERT INTO requests (id, teacher_id, student_id) VALUES (%(id)s, %(teacher_id)s, %(student_id)s)"
+                        self.cursor.execute(query, requestData)
+                        self.connection.commit()
+                        print("Record inserted successfully into table Requests table") 
+                except mysql.connector.Error as error:
+                    print("Failed to insert record into table: {}".format(error))
 
-                except:
-                    print("Failed to insert record into table: {}".format(error))        
-
-            
                 
                 
 
@@ -160,7 +175,12 @@ class MyDbDriver(DbDriver):
                 result = self.cursor.fetchall()
                 
                 for row in result:
-                    print(row)
+                    columnNames = [description[0] for description in self.cursor.description]
+
+                    for row in result:
+                        for i in range(len(columnNames)):
+                            print(f"{columnNames[i]}: {row[i]}")
+                        print()
 
             except mysql.connector.Error as error:
                 print("Failed to select record from table: {}".format(error))
@@ -182,11 +202,15 @@ class MyDbDriver(DbDriver):
                     if bcrypt.checkpw(password.encode('utf-8'), result[3].encode('utf-8')):
                         if result[5] == "STUDENT":
                             print("Welcome Student")
-                            return result[5]
+                            utils.Request.id = result[0]
+                            utils.Request.role = result[5]
+                            return utils.Request
                         
                         else:
                             print("Welcome Teacher")
-                            return result[5]
+                            utils.Request.id = result[0]
+                            utils.Request.role = result[5]
+                            return utils.Request
                       
                    
                        
@@ -197,6 +221,7 @@ class MyDbDriver(DbDriver):
                 print("Failed to select record from table: {}".format(error))
         else:
             print("No active connection")
+
 
 
 

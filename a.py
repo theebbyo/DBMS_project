@@ -1,6 +1,10 @@
 import bcrypt
 from mysqlDriver import MyDbDriver
+import utils
 
+
+
+request:utils.Request
 
 
 
@@ -8,10 +12,10 @@ def sign_in():
     email = input("Enter email: ")
     password = input("Enter password: ")
     while True:
-        role = my_db.login(email, password)
-        if role == "TEACHER" or role == "STUDENT":
+        request = my_db.login(email, password)
+        if request.role == "TEACHER" or request.role == "STUDENT":
             print("Login successfull")
-            return role
+            return request
         else:
             print("Invalid email or password")
             email = input("Enter email: ")
@@ -39,19 +43,56 @@ def insertion():
 
 
 
-def selecion_all_teachers():
-    sql = "SELECT users.id, users.name, users.email, users.phone, teachers.institution, teachers.expertize, offline_payments.amount, online_payments.amount FROM users INNER JOIN teachers ON users.id = teachers.user_id inner JOIN offline_payments ON users.id = offline_payments.user_id inner join online_payments ON users.id = online_payments.user_id"
-    my_db.select_from(sql)
 
-def selection_via_uvinersity(university:str):
-    sql = f"SELECT users.id, users.name, users.email, users.phone, teachers.institution, teachers.expertize, offline_payments.amount, online_payments.amount FROM users INNER JOIN teachers ON users.id = teachers.user_id inner JOIN offline_payments ON users.id = offline_payments.user_id inner join online_payments ON users.id = online_payments.user_id WHERE teachers.institution = '{university}'"
-    my_db.select_from(sql)
+def selecion_all_teachers(studentID:int=-1):
+    
 
-def selection_via_expertize(expertize:str):
-    sql = f"SELECT users.id, users.name, users.email, users.phone, teachers.institution, teachers.expertize, offline_payments.amount, online_payments.amount FROM users INNER JOIN teachers ON users.id = teachers.user_id inner JOIN offline_payments ON users.id = offline_payments.user_id inner join online_payments ON users.id = online_payments.user_id WHERE teachers.expertize = '{expertize}'"
+    sql = "SELECT users.id, users.name, users.email, users.phone, teachers.institution, teachers.expertize, payments.amount FROM users INNER JOIN teachers ON users.id = teachers.user_id inner JOIN payments ON users.id = payments.user_id "
     my_db.select_from(sql)
+    print("1. For send request")
+    print("2. Exit")
+    choice = int(input("Enter choice: "))
+    if choice == 1:
+        teacherID = int(input("Enter teacher ID: "))
+        my_db.insert_into("requests", teacherID, studentID)
+    elif choice == 2:
+        pass
+    else:
+        print("Invalid choice")
 
-def selection():
+        
+def selection_via_uvinersity(university:str, studentID:int = -1):
+    sql = f"SELECT users.id, users.name, users.email, users.phone, teachers.institution, teachers.expertize, payments.amount FROM users INNER JOIN teachers ON users.id = teachers.user_id inner JOIN payments ON users.id = payments.user_id WHERE teachers.institution = '{university}'"
+    my_db.select_from(sql)
+    print("1. For send request")
+    print("2. Exit")
+    choice = int(input("Enter choice: "))
+    if choice == 1:
+        teacherID = int(input("Enter teacher ID: "))
+        my_db.insert_into("requests", teacherID, studentID)
+    elif choice == 2:
+        pass
+    else:
+        print("Invalid choice")
+
+def selection_via_expertize(expertize:str, studentID:int = -1):
+    sql = f"SELECT users.id, users.name, users.email, users.phone, teachers.institution, teachers.expertize, payments.amount FROM users INNER JOIN teachers ON users.id = teachers.user_id inner JOIN payments ON users.id = payments.user_id  WHERE teachers.expertize = '{expertize}'"
+    my_db.select_from(sql)
+    
+    print("1. For send request")
+    print("2. Exit")
+    choice = int(input("Enter choice: "))
+    if choice == 1:
+        teacherID = int(input("Enter teacher ID: "))
+        my_db.insert_into("requests", teacherID, studentID)
+    elif choice == 2:
+        pass
+    else:
+        print("Invalid choice")
+
+    
+
+def selection(studentID:int = -1):
     while True:
         print("1. For select all the teachers")
         print("2. For select teachers from different university")
@@ -60,7 +101,7 @@ def selection():
         choice = int(input("Enter choice: "))
 
         if choice == 1:
-            selecion_all_teachers()
+            selecion_all_teachers(studentID)
         elif choice == 2:
                     while True:
                         print("1. For select teachers from BUET")
@@ -69,13 +110,13 @@ def selection():
                         print("4. Exit")
                         choice = int(input("Enter choice: "))
                         if choice == 1:
-                            selection_via_uvinersity("BUET")
+                            selection_via_uvinersity("BUET", studentID)
 
                         elif choice == 2:
-                            selection_via_uvinersity("Dhaka University")
+                            selection_via_uvinersity("Dhaka University", studentID)
 
                         elif choice == 3:
-                            selection_via_uvinersity("Dhaka Medical College")
+                            selection_via_uvinersity("Dhaka Medical College", studentID)
                         elif choice == 4:
                             break
                         else:
@@ -91,14 +132,14 @@ def selection():
                 print("5. Exit")
                 choice = int(input("Enter choice: "))
                 if choice == 1:
-                    selection_via_expertize("Math")
+                    selection_via_expertize("Math", studentID)
                 elif choice == 2:
-                    selection_via_expertize("Physics")
+                    selection_via_expertize("Physics", studentID)
 
                 elif choice == 3:
-                    selection_via_expertize("Chemistry")
+                    selection_via_expertize("Chemistry", studentID)
                 elif choice == 4:
-                    selection_via_expertize("Biology")
+                    selection_via_expertize("Biology", studentID)
                 elif choice == 5:
                     break
                 else:
@@ -106,24 +147,9 @@ def selection():
         elif choice == 4:
             break
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 if __name__ == "__main__":
     my_db = MyDbDriver()
     my_db.set_connection()
-
-
     
     while True:
         print("1. For insertion operation")
@@ -133,8 +159,10 @@ if __name__ == "__main__":
         if choice == 1:
             insertion()
         elif choice == 2:
-            if sign_in() == "STUDENT":
-                selection()
+            request:utils.Request
+            request = sign_in()
+            if request.role == "STUDENT":
+                selection(request.id)
             else:
                 print("You are not a student")
 
