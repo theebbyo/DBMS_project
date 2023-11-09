@@ -209,19 +209,24 @@ class MyDbDriver(DbDriver):
                 self.cursor.execute(sql)
                 result = self.cursor.fetchall()
                 
-                for row in result:
-                    columnNames = [description[0] for description in self.cursor.description]
+               
+                columnNames = [description[0] for description in self.cursor.description]
+                if result:
 
                     for row in result:
                         for i in range(len(columnNames)):
                             print(f"{columnNames[i]}: {row[i]}")
                         print()
-
+                else:
+                    print("No result found")
             except mysql.connector.Error as error:
                 print("Failed to select record from table: {}".format(error))
         
         else:
             print("No active connection")
+
+
+
 
 
     def login(self, email, password):

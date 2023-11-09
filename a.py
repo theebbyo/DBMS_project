@@ -97,7 +97,8 @@ def selectionStudent(studentID:int = -1):
         print("1. For select all the teachers")
         print("2. For select teachers from different university")
         print("3. For select teachers from different expertize")
-        print("4. Exit")
+        print("4. For see your teachers")
+        print("5. Exit")
         choice = int(input("Enter choice: "))
 
         if choice == 1:
@@ -144,8 +145,15 @@ def selectionStudent(studentID:int = -1):
                     break
                 else:
                     print("Invalid choice")
+
         elif choice == 4:
+            sql = f"SELECT users.id, users.name, users.email, users.phone, teachers.institution, teachers.expertize, tuitions.created_at FROM tuitions INNER JOIN users ON tuitions.teacher_id = users.id INNER JOIN teachers ON tuitions.teacher_id = teachers.user_id WHERE tuitions.student_id = {studentID}"
+            my_db.select_from(sql)
+            
+        elif choice == 5:
             break
+        else:
+            print("Invalid choice")
 
 
 def selectionTeacher(teacherID:int = -1):
@@ -182,6 +190,11 @@ def selectionTeacher(teacherID:int = -1):
             break
         else:
             print("Invalid choice")
+
+
+
+
+
 
 
 if __name__ == "__main__":
