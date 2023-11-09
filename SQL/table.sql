@@ -62,3 +62,21 @@ create table tuitions(
     foreign key (student_id) references users(id),
     foreign key (teacher_id) references users(id)
 );
+
+
+
+create table tuitionDates(
+    id int primary key,
+    tuition_id int,
+    date datetime default current_timestamp,
+    foreign key (tuition_id) references tuitions(id)
+);
+
+
+
+create table pendingPayements(
+    id int primary key,
+    tuition_id int,
+    amount int default 0,
+    foreign key (tuition_id) references tuitions(id)
+);

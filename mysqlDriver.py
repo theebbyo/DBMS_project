@@ -140,6 +140,7 @@ class MyDbDriver(DbDriver):
 
                 except:
                     print("Failed to insert record into table: {}".format(error))
+        
                     
         elif table == "requests":
             id = random.randint(1,100000)
@@ -189,6 +190,19 @@ class MyDbDriver(DbDriver):
                         self.connection.commit()
                         print("Record inserted successfully into table Tuitions table")
 
+
+
+                        newID = random.randint(1,100000) 
+                        pendingPaymentData = {
+                            "newID": newID,
+                            "id": id
+                        }
+                        query = "insert into pendingPayements (id, tuition_id) values (%(newID)s, %(id)s)"
+                        self.cursor.execute(query, pendingPaymentData)
+                        self.connection.commit()
+                        print("Record inserted successfully into table PendingPayments table")
+                        
+
                     deleteQuery = "DELETE FROM requests WHERE teacher_id = %(teacher_id)s AND student_id = %(student_id)s"
                     self.cursor.execute(deleteQuery, tuitionData)
                     self.connection.commit()
@@ -197,6 +211,60 @@ class MyDbDriver(DbDriver):
                         print("Request removed successfully")
                 except mysql.connector.Error as error:
                     print("Failed to insert record into table: {}".format(error))
+
+
+
+
+
+        elif table == "tuitionDates":
+            id = random.randint(1,100000)
+            try:
+                selectQuery = "SELECT id FROM tuitions WHERE teacher_id = %(teacher_id)s AND student_id = %(student_id)s"
+                self.cursor.execute(selectQuery, {"teacher_id": teacherID, "student_id": studentID})
+                result = self.cursor.fetchone()
+                tuitionID = result[0]
+                if result:
+                    
+                    tuitionDateData = {
+                        "id":id,
+                        "tuition_id": tuitionID
+                    }
+
+                    
+                    query = "INSERT INTO tuitionDates (id, tuition_id) VALUES (%(id)s, %(tuition_id)s)"
+                    self.cursor.execute(query, tuitionDateData)
+                    self.connection.commit()
+                    print("Record inserted successfully into table TuitionDates table")
+
+
+                    selectQuery = "select amount from payments where user_id = %(teacher_id)s"
+                    self.cursor.execute(selectQuery, {"teacher_id": teacherID})
+                    result = self.cursor.fetchone()
+                    amount = result[0]
+                    if result:
+                        selectQuery = "select amount from pendingPayements where tuition_id = %(tuition_id)s"
+                        self.cursor.execute(selectQuery, {"tuition_id": tuitionID})
+                        result = self.cursor.fetchone()
+
+                        amount = amount + result[0]
+
+                        updateQuery = "update pendingPayements set amount = %(amount)s where tuition_id = %(tuition_id)s"
+                        self.cursor.execute(updateQuery, {"amount": amount, "tuition_id": tuitionID})
+                        self.connection.commit()
+                        print("Record updated successfully into table PendingPayments table")
+                    else:
+                        print("No payment found")
+                else:
+                    print("No tuition found")
+                
+
+                
+
+
+                
+            except mysql.connector.Error as error:
+                print("Failed to insert record into table: {}".format(error))
+
 
 
                 

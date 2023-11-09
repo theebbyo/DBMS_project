@@ -149,6 +149,25 @@ def selectionStudent(studentID:int = -1):
         elif choice == 4:
             sql = f"SELECT users.id, users.name, users.email, users.phone, teachers.institution, teachers.expertize, tuitions.created_at FROM tuitions INNER JOIN users ON tuitions.teacher_id = users.id INNER JOIN teachers ON tuitions.teacher_id = teachers.user_id WHERE tuitions.student_id = {studentID}"
             my_db.select_from(sql)
+            print("1. For see previous tuition dates")
+            print("2. For see pending payments")
+            print("3. Exit")
+            choice = int(input("Enter choice: "))
+            if choice == 1:
+                teacherID = int(input("Enter teacher ID: "))
+                sql = f"select td.date from tuitionDates td join tuitions t on td.tuition_id = t.id where t.student_id = {studentID} and t.teacher_id = {teacherID}"
+                my_db.select_from(sql)
+
+
+            elif choice == 2:
+                teacherID = int(input("Enter teacher ID: "))
+                sql = f"select p.amount from pendingPayements p join tuitions t on p.tuition_id = t.id where t.student_id = {studentID} and t.teacher_id = {teacherID}"
+                my_db.select_from(sql)    
+                
+            elif choice == 3:
+                pass
+        
+       
             
         elif choice == 5:
             break
@@ -185,6 +204,28 @@ def selectionTeacher(teacherID:int = -1):
         elif choice == 2:
             sql = f"SELECT users.id, users.name, users.email, users.phone, students.institution, students.address, tuitions.created_at FROM tuitions INNER JOIN users ON tuitions.student_id = users.id INNER JOIN students ON tuitions.student_id = students.user_id WHERE tuitions.teacher_id = {teacherID}"
             my_db.select_from(sql)
+            print("1. For insert tuiton date")
+            print("2. For see previous tuition dates")
+            print("3. For see pending payments")
+            print("4. Exit")
+            choice = int(input("Enter choice: "))
+            if choice == 1:
+                studentID = int(input("Enter student ID: "))
+                my_db.insert_into("tuitionDates", teacherID, studentID)
+            elif choice == 2:
+                studentID = int(input("Enter student ID: "))
+                sql = f"select td.date from tuitionDates td join tuitions t on td.tuition_id = t.id where t.student_id = {studentID} and t.teacher_id = {teacherID}"
+                my_db.select_from(sql)
+
+            elif choice == 3:
+                studentID = int(input("Enter student ID: "))
+                sql = f"select p.amount from pendingPayements p join tuitions t on p.tuition_id = t.id where t.student_id = {studentID} and t.teacher_id = {teacherID}"
+                my_db.select_from(sql)
+
+            elif choice == 4:
+                pass
+            else:
+                print("Invalid choice")
             
         elif choice == 3:
             break
