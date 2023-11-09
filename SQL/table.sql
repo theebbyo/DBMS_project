@@ -45,6 +45,7 @@ create table requests(
     id int  primary key,
     teacher_id int not null,
     student_id int not null,
+    send_at datetime default current_timestamp,
     foreign key (student_id) references users(id),
     foreign key (teacher_id) references users(id)
 );
@@ -57,6 +58,7 @@ create table tuitions(
     
     teacher_id int,
     student_id int,
+    created_at datetime default current_timestamp,
     foreign key (student_id) references users(id),
     foreign key (teacher_id) references users(id)
 );

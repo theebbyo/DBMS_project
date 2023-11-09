@@ -151,10 +151,11 @@ def selectionStudent(studentID:int = -1):
 def selectionTeacher(teacherID:int = -1):
     while True:
         print("1. For see all the requests")
-        print("2. Exit")
+        print("2. For see you students")
+        print("3. Exit")
         choice = int(input("Enter choice: "))
         if choice == 1:
-            sql = f"SELECT users.id, users.name, users.email, users.phone, students.institution, students.address FROM requests INNER JOIN users ON requests.student_id = users.id INNER JOIN students ON requests.student_id = students.user_id WHERE requests.teacher_id = {teacherID}"
+            sql = f"SELECT users.id, users.name, users.email, users.phone, students.institution, students.address, requests.send_at FROM requests INNER JOIN users ON requests.student_id = users.id INNER JOIN students ON requests.student_id = students.user_id WHERE requests.teacher_id = {teacherID}"
             my_db.select_from(sql)
 
             print("1. For accept request")
@@ -174,6 +175,10 @@ def selectionTeacher(teacherID:int = -1):
             else:
                 print("Invalid choice")
         elif choice == 2:
+            sql = f"SELECT users.id, users.name, users.email, users.phone, students.institution, students.address, tuitions.created_at FROM tuitions INNER JOIN users ON tuitions.student_id = users.id INNER JOIN students ON tuitions.student_id = students.user_id WHERE tuitions.teacher_id = {teacherID}"
+            my_db.select_from(sql)
+            
+        elif choice == 3:
             break
         else:
             print("Invalid choice")
