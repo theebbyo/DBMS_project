@@ -91,3 +91,16 @@ create table messages(
     sender ENUM('STUDENT', 'TEACHER') NOT NULL,
     foreign key (tuition_id) references tuitions(id)
 );
+
+
+
+create table notifications(
+    id int primary key,
+    teacher_id int,
+    student_id int,
+    message varchar(255),
+    send_at datetime default current_timestamp,
+    toShow ENUM('STUDENT', 'TEACHER') NOT NULL,
+    foreign key (student_id) references users(id),
+    foreign key (teacher_id) references users(id)
+);

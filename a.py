@@ -28,8 +28,8 @@ def sign_in():
 
 def insertion():
     while True:
-        print("1. Insert into students")
-        print("2. Insert into teachers")
+        print("1. Sign Up as student")
+        print("2. Sign Up as teacher")
         print("3. Exit")
         choice = int(input("Enter choice: "))
         
@@ -99,7 +99,8 @@ def selectionStudent(studentID:int = -1):
         print("2. For select teachers from different university")
         print("3. For select teachers from different expertize")
         print("4. For see your teachers")
-        print("5. Exit")
+        print("5. For see your Notifications")
+        print("6. Exit")
         choice = int(input("Enter choice: "))
 
         if choice == 1:
@@ -197,9 +198,15 @@ def selectionStudent(studentID:int = -1):
             elif choice == 4:
                 pass
         
-       
-            
         elif choice == 5:
+            toShow = "STUDENT"
+            sql = f"select u.name, n.message, n.send_at from notifications n join users u on n.teacher_id = u.id where n.student_id = {studentID} and n.toShow = '{toShow}' order by n.send_at"
+            my_db.select_from(sql)
+            print()
+
+
+            
+        elif choice == 6:
             break
         else:
             print("Invalid choice")
@@ -209,7 +216,8 @@ def selectionTeacher(teacherID:int = -1):
     while True:
         print("1. For see all the requests")
         print("2. For see you students")
-        print("3. Exit")
+        print("3. For see your Notifications")
+        print("4. Exit")
         choice = int(input("Enter choice: "))
         if choice == 1:
             sql = f"SELECT users.id, users.name, users.email, users.phone, students.institution, students.address, requests.send_at FROM requests INNER JOIN users ON requests.student_id = users.id INNER JOIN students ON requests.student_id = students.user_id WHERE requests.teacher_id = {teacherID}"
@@ -295,8 +303,16 @@ def selectionTeacher(teacherID:int = -1):
                 pass
             else:
                 print("Invalid choice")
-            
+
         elif choice == 3:
+            toShow = "TEACHER"
+            sql = f"select u.name, n.message, n.send_at from notifications n join users u on n.student_id = u.id where n.teacher_id = {teacherID} and n.toShow = '{toShow}' order by n.send_at"
+            my_db.select_from(sql)
+            print()
+            
+        
+            
+        elif choice == 4:
             break
         else:
             print("Invalid choice")

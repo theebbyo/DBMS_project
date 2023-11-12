@@ -151,6 +151,8 @@ class MyDbDriver(DbDriver):
                 "teacher_id": teacherID,
                 "student_id": studentID
             }
+           
+
 
             if self.cursor:  
                 try:
@@ -173,6 +175,19 @@ class MyDbDriver(DbDriver):
                         self.connection.commit()
                         print("Record inserted successfully into table Requests table") 
                         print("Request sent successfully")
+                        id = random.randint(1,100000)
+                        notificationData = {
+                            "id":id,
+                            "teacher_id": teacherID,
+                            "student_id": studentID,
+                            "message":"You have a new request from a student",
+                            "toShow": "TEACHER" 
+                        }
+                        query = "INSERT INTO notifications (id, teacher_id, student_id, message, toShow) VALUES (%(id)s, %(teacher_id)s, %(student_id)s, %(message)s, %(toShow)s)"
+                        self.cursor.execute(query, notificationData)
+                        self.connection.commit()
+                        print("Record inserted successfully into table Notifications table")
+                        
                 except mysql.connector.Error as error:
                     print("Failed to insert record into table: {}".format(error))
             
@@ -191,6 +206,21 @@ class MyDbDriver(DbDriver):
                         self.cursor.execute(query, tuitionData)
                         self.connection.commit()
                         print("Record inserted successfully into table Tuitions table")
+
+                        newID = random.randint(1,100000)
+                        notificationData = {
+                            "id":newID,
+                            "teacher_id": teacherID,
+                            "student_id": studentID,
+                            "message":"Your request has been accepted",
+                            "toShow": "STUDENT" 
+                        }
+                        query = "INSERT INTO notifications (id, teacher_id, student_id, message, toShow) VALUES (%(id)s, %(teacher_id)s, %(student_id)s, %(message)s, %(toShow)s)"
+                        self.cursor.execute(query, notificationData)
+                        self.connection.commit()
+                        print("Record inserted successfully into table Notifications table")
+
+
 
 
 
@@ -211,6 +241,24 @@ class MyDbDriver(DbDriver):
                     print("Record deleted successfully from table Requests table")
                     if type == -1:
                         print("Request removed successfully")
+
+
+                        id= random.randint(1,100000)
+                        notificationData = {
+                            "id":id,
+                            "teacher_id": teacherID,
+                            "student_id": studentID,
+                            "message":"Your request has been rejected",
+                            "toShow": "STUDENT" 
+                        }
+                        query = "INSERT INTO notifications (id, teacher_id, student_id, message, toShow) VALUES (%(id)s, %(teacher_id)s, %(student_id)s, %(message)s, %(toShow)s)"
+                        self.cursor.execute(query, notificationData)
+                        self.connection.commit()
+                        print("Record inserted successfully into table Notifications table")
+
+
+
+
                 except mysql.connector.Error as error:
                     print("Failed to insert record into table: {}".format(error))
 
@@ -239,6 +287,24 @@ class MyDbDriver(DbDriver):
                     print("Record inserted successfully into table TuitionDates table")
 
 
+                    sql =f"select count(*) from tuitionDates where tuition_id = {tuitionID}"
+                    self.cursor.execute(sql)
+                    result = self.cursor.fetchone()
+                    count = result[0]
+                    if count%12 ==0:
+                        id = random.randint(1,100000)
+                        notificationData = {
+                            "id":id,
+                            "teacher_id": teacherID,
+                            "student_id": studentID,
+                            "message":"Complete your payment, it's been a month",
+                            "toShow": "STUDENT" 
+                        }
+                        query = "INSERT INTO notifications (id, teacher_id, student_id, message, toShow) VALUES (%(id)s, %(teacher_id)s, %(student_id)s, %(message)s, %(toShow)s)"
+                        self.cursor.execute(query, notificationData)
+                        self.connection.commit()
+                        print("Record inserted successfully into table Notifications table")
+
                     selectQuery = "select amount from payments where user_id = %(teacher_id)s"
                     self.cursor.execute(selectQuery, {"teacher_id": teacherID})
                     result = self.cursor.fetchone()
@@ -256,6 +322,24 @@ class MyDbDriver(DbDriver):
                         print("Record updated successfully into table PendingPayments table")
                     else:
                         print("No payment found")
+
+
+
+                    id = random.randint(1,100000)
+                    notificationData = {
+                        "id":id,
+                        "teacher_id": teacherID,
+                        "student_id": studentID,
+                        "message":"Your tuition has been recorded",
+                        "toShow": "STUDENT" 
+                    }
+                    query = "INSERT INTO notifications (id, teacher_id, student_id, message, toShow) VALUES (%(id)s, %(teacher_id)s, %(student_id)s, %(message)s, %(toShow)s)"
+                    self.cursor.execute(query, notificationData)
+                    self.connection.commit()
+                    print("Record inserted successfully into table Notifications table")
+
+
+
                 else:
                     print("No tuition found")
                 
@@ -290,6 +374,22 @@ class MyDbDriver(DbDriver):
                         self.cursor.execute(query, messageData)
                         self.connection.commit()
                         print("Record inserted successfully into table Messages table")
+
+
+
+                        id = random.randint(1,100000)
+                        notificationData = {
+                            "id":id,
+                            "teacher_id": teacherID,
+                            "student_id": studentID,
+                            "message":"sent you a message",
+                            "toShow": "STUDENT" if type == 1 else "TEACHER"
+                        }
+                        query = "INSERT INTO notifications (id, teacher_id, student_id, message, toShow) VALUES (%(id)s, %(teacher_id)s, %(student_id)s, %(message)s, %(toShow)s)"
+                        self.cursor.execute(query, notificationData)
+                        self.connection.commit()
+                        print("Record inserted successfully into table Notifications table")
+
                 else:
                     print("No tuition found")
             except mysql.connector.Error as error:
