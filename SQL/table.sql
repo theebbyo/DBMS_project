@@ -80,3 +80,14 @@ create table pendingPayements(
     amount int default 0,
     foreign key (tuition_id) references tuitions(id)
 );
+
+
+
+create table messages(
+    id int primary key,
+    tuition_id int,
+    message varchar(255),
+    send_at datetime default current_timestamp,
+    sender ENUM('STUDENT', 'TEACHER') NOT NULL,
+    foreign key (tuition_id) references tuitions(id)
+);

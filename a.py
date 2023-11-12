@@ -32,6 +32,7 @@ def insertion():
         print("2. Insert into teachers")
         print("3. Exit")
         choice = int(input("Enter choice: "))
+        
         if choice == 1:
             my_db.insert_into("students")
         elif choice == 2:
@@ -151,20 +152,49 @@ def selectionStudent(studentID:int = -1):
             my_db.select_from(sql)
             print("1. For see previous tuition dates")
             print("2. For see pending payments")
-            print("3. Exit")
+            print("3. For chat with teacher")
+
+            print("4. Exit")
             choice = int(input("Enter choice: "))
             if choice == 1:
                 teacherID = int(input("Enter teacher ID: "))
                 sql = f"select td.date from tuitionDates td join tuitions t on td.tuition_id = t.id where t.student_id = {studentID} and t.teacher_id = {teacherID}"
                 my_db.select_from(sql)
 
-
+           
+                
             elif choice == 2:
                 teacherID = int(input("Enter teacher ID: "))
                 sql = f"select p.amount from pendingPayements p join tuitions t on p.tuition_id = t.id where t.student_id = {studentID} and t.teacher_id = {teacherID}"
                 my_db.select_from(sql)    
-                
+
             elif choice == 3:
+                teacherID = int(input("Enter teacher ID: "))
+                sql = f"select m.sender, m.message, m.send_at from messages m join tuitions t on m.tuition_id = t.id where t.student_id = {studentID} and t.teacher_id = {teacherID} order by m.send_at"
+                my_db.select_from(sql)
+                print()
+                print("1. For reply")
+                print("2. For exit")
+                choice = int(input("Enter choice: "))
+                while True:
+                    if choice == 1:
+                        my_db.insert_into("messages", teacherID, studentID)
+                        my_db.select_from(sql)
+                        print()
+                        print("1. For reply")
+                        print("2. For exit")
+                        choice = int(input("Enter choice: "))
+
+                        
+                    elif choice == 2:
+                        break
+                    else:
+                        print("Invalid choice")
+                        choice = int(input("Enter choice: "))     
+
+
+
+            elif choice == 4:
                 pass
         
        
@@ -207,7 +237,8 @@ def selectionTeacher(teacherID:int = -1):
             print("1. For insert tuiton date")
             print("2. For see previous tuition dates")
             print("3. For see pending payments")
-            print("4. Exit")
+            print("4. For chat with student")
+            print("5. Exit")
             choice = int(input("Enter choice: "))
             if choice == 1:
                 studentID = int(input("Enter student ID: "))
@@ -216,13 +247,51 @@ def selectionTeacher(teacherID:int = -1):
                 studentID = int(input("Enter student ID: "))
                 sql = f"select td.date from tuitionDates td join tuitions t on td.tuition_id = t.id where t.student_id = {studentID} and t.teacher_id = {teacherID}"
                 my_db.select_from(sql)
+                
 
             elif choice == 3:
                 studentID = int(input("Enter student ID: "))
                 sql = f"select p.amount from pendingPayements p join tuitions t on p.tuition_id = t.id where t.student_id = {studentID} and t.teacher_id = {teacherID}"
                 my_db.select_from(sql)
 
+
             elif choice == 4:
+                
+
+                studentID = int(input("Enter student ID: "))
+                sql = f"select m.sender, m.message, m.send_at from messages m join tuitions t on m.tuition_id = t.id where t.student_id = {studentID} and t.teacher_id = {teacherID} order by m.send_at"
+                my_db.select_from(sql)
+                print()
+                print("1. For reply")
+                print("2. For exit")
+                choice = int(input("Enter choice: "))
+                while True:
+                    if choice == 1:
+                        my_db.insert_into("messages", teacherID, studentID,1)
+                        my_db.select_from(sql)
+                        print()
+                        print("1. For reply")
+                        print("2. For exit")
+                        choice = int(input("Enter choice: "))
+
+                        
+                    elif choice == 2:
+                        break
+                    else:
+                        print("Invalid choice")
+                        choice = int(input("Enter choice: "))
+
+
+                    
+
+
+
+
+                
+
+
+
+            elif choice == 5:
                 pass
             else:
                 print("Invalid choice")
@@ -243,8 +312,8 @@ if __name__ == "__main__":
     my_db.set_connection()
     
     while True:
-        print("1. For insertion operation")
-        print("2. For selection operation")
+        print("1. For Sign up")
+        print("2. For Sign in")
         print("3. Exit")
         choice = int(input("Enter choice: "))
         if choice == 1:

@@ -29,6 +29,8 @@ class MyDbDriver(DbDriver):
         else:
             print("No active connection to close")
 
+    print()
+
 
 
     def insert_into(self, table, teacherID = -1, studentID = -1, type = -1):
@@ -266,7 +268,40 @@ class MyDbDriver(DbDriver):
                 print("Failed to insert record into table: {}".format(error))
 
 
+        elif table == "messages":
+            id = random.randint(1,100000)
+            try:
+                selectQuery = "SELECT id FROM tuitions WHERE teacher_id = %(teacher_id)s AND student_id = %(student_id)s"
+                self.cursor.execute(selectQuery, {"teacher_id": teacherID, "student_id": studentID})
+                result = self.cursor.fetchone()
+                tuitionID = result[0]
+                if result:
+                        
+                        
+                        messageData = {
+                            "id":id,
+                            "tuition_id": tuitionID,
+                            "message": input("Enter message: "),
+                            "sender": "TEACHER" if type == 1 else "STUDENT"
+                        }
+    
+                        
+                        query = "INSERT INTO messages (id, tuition_id,  message, sender) VALUES (%(id)s, %(tuition_id)s, %(message)s,%(sender)s)"
+                        self.cursor.execute(query, messageData)
+                        self.connection.commit()
+                        print("Record inserted successfully into table Messages table")
+                else:
+                    print("No tuition found")
+            except mysql.connector.Error as error:
+                print("Failed to insert record into table: {}".format(error))
+                
 
+
+        
+        print()
+
+
+        
                 
                 
                 
@@ -292,6 +327,8 @@ class MyDbDriver(DbDriver):
         
         else:
             print("No active connection")
+        
+        print()
 
 
 
@@ -329,7 +366,8 @@ class MyDbDriver(DbDriver):
                 print("Failed to select record from table: {}".format(error))
         else:
             print("No active connection")
-
+        
+        print()
 
 
 
