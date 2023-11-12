@@ -104,3 +104,21 @@ create table notifications(
     foreign key (student_id) references users(id),
     foreign key (teacher_id) references users(id)
 );
+
+
+
+create table makePayements(
+    id int primary key,
+    tuition_id int,
+    amount int default 0,
+    transaction_id varchar(255),
+    send_at datetime default current_timestamp,
+    foreign key (tuition_id) references tuitions(id)
+);
+
+create table account(
+    id int primary key,
+    user_id int,
+    balance int default 0,
+    foreign key (user_id) references users(id)
+); 

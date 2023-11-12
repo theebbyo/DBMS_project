@@ -1,4 +1,5 @@
 import random
+import string
 import bcrypt
 from dbDriver import DbDriver
 
@@ -113,6 +114,12 @@ class MyDbDriver(DbDriver):
                 "userID": userID
                 
             }
+
+            accountData = {
+                "id": random.randint(1,100000),
+                "user_id": userID,
+                "balance": 0
+            }
             
             
             if self.cursor:
@@ -140,6 +147,14 @@ class MyDbDriver(DbDriver):
                     self.connection.commit()
                     print("Record inserted successfully into table Payments table")
 
+                except:
+                    print("Failed to insert record into table: {}".format(error))
+
+                try:
+                    query = "INSERT INTO account (id, user_id, balance) VALUES (%(id)s, %(user_id)s, %(balance)s)"
+                    self.cursor.execute(query, accountData)
+                    self.connection.commit()
+                    print("Record inserted successfully into table Account table")
                 except:
                     print("Failed to insert record into table: {}".format(error))
         
@@ -396,12 +411,79 @@ class MyDbDriver(DbDriver):
                 print("Failed to insert record into table: {}".format(error))
                 
 
+        elif table == "makePayements":
+            id = random.randint(1,100000)
+            try:
+                selectQuery = "SELECT id FROM tuitions WHERE teacher_id = %(teacher_id)s AND student_id = %(student_id)s"
+                self.cursor.execute(selectQuery, {"teacher_id": teacherID, "student_id": studentID})
+                result = self.cursor.fetchone()
+                tuitionID = result[0]
+                if result:
+                    selectQuery = "select amount from pendingPayements where tuition_id = %(tuition_id)s"
+                    self.cursor.execute(selectQuery, {"tuition_id": tuitionID})
+                    result = self.cursor.fetchone()
+                    amount = result[0]
+                    if result:
+                        transaction_id = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
+
+                        paymentData = {
+                            "id":id,
+                            "tuition_id": tuitionID,
+                            "amount": amount,
+                            "transaction_id": transaction_id
+                        }
+                        query = "INSERT INTO makePayements (id, tuition_id, amount, transaction_id) VALUES (%(id)s, %(tuition_id)s, %(amount)s, %(transaction_id)s)"
+                        self.cursor.execute(query, paymentData)
+                        self.connection.commit()
+                        print("Record inserted successfully into table MakePayements table")
+
+                        updateQuery = "update pendingPayements set amount = 0 where tuition_id = %(tuition_id)s"
+                        self.cursor.execute(updateQuery, {"tuition_id": tuitionID})
+                        self.connection.commit()
+                        print("Record updated successfully into table PendingPayments table")
+                        id = random.randint(1,100000)
+                        notificationData = {
+                            "id":id,
+                            "teacher_id": teacherID,
+                            "student_id": studentID,
+                            "message":"You have a new payment",
+                            "toShow": "TEACHER" 
+                        }
+
+                        query = "INSERT INTO notifications (id, teacher_id, student_id, message, toShow) VALUES (%(id)s, %(teacher_id)s, %(student_id)s, %(message)s, %(toShow)s)"
+                        self.cursor.execute(query, notificationData)
+                        self.connection.commit()
+                        print("Record inserted successfully into table Notifications table")
+
+                        selectQuery = "select balance from account where user_id = %(teacher_id)s"
+                        self.cursor.execute(selectQuery, {"teacher_id": teacherID})
+                        result = self.cursor.fetchone()
+                        balance = result[0]
+                        if result:
+                            balance = balance + amount
+                            updateQuery = "update account set balance = %(balance)s where user_id = %(teacher_id)s"
+                            self.cursor.execute(updateQuery, {"balance": balance, "teacher_id": teacherID})
+                            self.connection.commit()
+                            print("Record updated successfully into table Account table")
+                        else:
+                            print("No payment found")
+                                                 
+
+                    else:
+                        print("No payment found")
+                else:
+                    print("No tuition found")
+            except mysql.connector.Error as error:
+                print("Failed to insert record into table: {}".format(error))
+            
 
         
         print()
 
 
-        
+
+    
+    
                 
                 
                 

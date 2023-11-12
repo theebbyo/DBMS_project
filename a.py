@@ -168,6 +168,16 @@ def selectionStudent(studentID:int = -1):
                 teacherID = int(input("Enter teacher ID: "))
                 sql = f"select p.amount from pendingPayements p join tuitions t on p.tuition_id = t.id where t.student_id = {studentID} and t.teacher_id = {teacherID}"
                 my_db.select_from(sql)    
+                print("1. For pay")
+                print("2. Exit")
+                choice = int(input("Enter choice: "))
+                if choice == 1:
+                    print("hi")
+                    my_db.insert_into("makePayements", teacherID, studentID)
+                elif choice == 2:
+                    pass
+                
+
 
             elif choice == 3:
                 teacherID = int(input("Enter teacher ID: "))
@@ -217,7 +227,8 @@ def selectionTeacher(teacherID:int = -1):
         print("1. For see all the requests")
         print("2. For see you students")
         print("3. For see your Notifications")
-        print("4. Exit")
+        print("4. For see you account")
+        print("5. Exit")
         choice = int(input("Enter choice: "))
         if choice == 1:
             sql = f"SELECT users.id, users.name, users.email, users.phone, students.institution, students.address, requests.send_at FROM requests INNER JOIN users ON requests.student_id = users.id INNER JOIN students ON requests.student_id = students.user_id WHERE requests.teacher_id = {teacherID}"
@@ -310,9 +321,11 @@ def selectionTeacher(teacherID:int = -1):
             my_db.select_from(sql)
             print()
             
-        
-            
         elif choice == 4:
+            sql = f"select balance from account where user_id = {teacherID}"
+            my_db.select_from(sql)
+            
+        elif choice == 5:
             break
         else:
             print("Invalid choice")
