@@ -46,47 +46,63 @@ def insertion():
 
 
 def selecion_all_teachers(studentID:int=-1):
+    sql ="select users.id, users.name, users.email, users.phone, teachers.institution, teachers.expertize, payments.amount,  avg(reviews.rating) rating  from users inner join teachers on users.id = teachers.user_id inner join payments on users.id = payments.user_id left join reviews on users.id = reviews.teacher_id group by users.id, users.name, users.email, users.phone, teachers.institution, teachers.expertize, payments.amount"
     
 
-    sql = "SELECT users.id, users.name, users.email, users.phone, teachers.institution, teachers.expertize, payments.amount FROM users INNER JOIN teachers ON users.id = teachers.user_id inner JOIN payments ON users.id = payments.user_id "
     my_db.select_from(sql)
     print("1. For send request")
-    print("2. Exit")
+    print("2. For see others reviews")
+    print("3. Exit")
     choice = int(input("Enter choice: "))
     if choice == 1:
         teacherID = int(input("Enter teacher ID: "))
         my_db.insert_into("requests", teacherID, studentID)
+
     elif choice == 2:
+        teacherID = int(input("Enter teacher ID: "))
+        sql = f"select u.name, r.rating, r.review from reviews r join users u on r.student_id = u.id where r.teacher_id = {teacherID}"
+        my_db.select_from(sql)
+    elif choice == 3:
         pass
     else:
         print("Invalid choice")
 
         
 def selection_via_uvinersity(university:str, studentID:int = -1):
-    sql = f"SELECT users.id, users.name, users.email, users.phone, teachers.institution, teachers.expertize, payments.amount FROM users INNER JOIN teachers ON users.id = teachers.user_id inner JOIN payments ON users.id = payments.user_id WHERE teachers.institution = '{university}'"
+    sql =f"select users.id, users.name, users.email, users.phone, teachers.institution, teachers.expertize, payments.amount , avg(reviews.rating) rating from users inner join teachers on users.id = teachers.user_id inner join payments on users.id = payments.user_id left join reviews on users.id = reviews.teacher_id where teachers.institution = '{university}' group by users.id, users.name, users.email, users.phone, teachers.institution, teachers.expertize, payments.amount"
     my_db.select_from(sql)
     print("1. For send request")
-    print("2. Exit")
+    print("2. For see others reviews")
+    print("3. Exit")
     choice = int(input("Enter choice: "))
     if choice == 1:
         teacherID = int(input("Enter teacher ID: "))
         my_db.insert_into("requests", teacherID, studentID)
     elif choice == 2:
+        teacherID = int(input("Enter teacher ID: "))
+        sql = f"select u.name, r.rating, r.review from reviews r join users u on r.student_id = u.id where r.teacher_id = {teacherID}"
+        my_db.select_from(sql)
+    elif choice == 3:
         pass
     else:
         print("Invalid choice")
 
 def selection_via_expertize(expertize:str, studentID:int = -1):
-    sql = f"SELECT users.id, users.name, users.email, users.phone, teachers.institution, teachers.expertize, payments.amount FROM users INNER JOIN teachers ON users.id = teachers.user_id inner JOIN payments ON users.id = payments.user_id  WHERE teachers.expertize = '{expertize}'"
+    sql = f"select users.id, users.name, users.email, users.phone, teachers.institution, teachers.expertize, payments.amount, avg(reviews.rating) rating from users inner join teachers on users.id = teachers.user_id inner join payments on users.id = payments.user_id left join reviews on users.id = reviews.teacher_id where teachers.expertize = '{expertize}' group by users.id, users.name, users.email, users.phone, teachers.institution, teachers.expertize, payments.amount"
     my_db.select_from(sql)
     
     print("1. For send request")
-    print("2. Exit")
+    print("2. For see others reviews")
+    print("3. Exit")
     choice = int(input("Enter choice: "))
     if choice == 1:
         teacherID = int(input("Enter teacher ID: "))
         my_db.insert_into("requests", teacherID, studentID)
     elif choice == 2:
+        teacherID = int(input("Enter teacher ID: "))
+        sql = f"select u.name, r.rating, r.review from reviews r join users u on r.student_id = u.id where r.teacher_id = {teacherID}"
+        my_db.select_from(sql)
+    elif choice == 3:
         pass
     else:
         print("Invalid choice")
@@ -149,13 +165,13 @@ def selectionStudent(studentID:int = -1):
                     print("Invalid choice")
 
         elif choice == 4:
-            sql = f"SELECT users.id, users.name, users.email, users.phone, teachers.institution, teachers.expertize, tuitions.created_at FROM tuitions INNER JOIN users ON tuitions.teacher_id = users.id INNER JOIN teachers ON tuitions.teacher_id = teachers.user_id WHERE tuitions.student_id = {studentID}"
+            sql = f"SELECT users.id, users.name, users.email, users.phone, teachers.institution, teachers.expertize, tuitions.created_at , avg(reviews.rating) rating FROM tuitions INNER JOIN users ON tuitions.teacher_id = users.id INNER JOIN teachers ON tuitions.teacher_id = teachers.user_id LEFT JOIN reviews ON tuitions.teacher_id = reviews.teacher_id WHERE tuitions.student_id = {studentID} GROUP BY users.id, users.name, users.email, users.phone, teachers.institution, teachers.expertize, tuitions.created_at"
             my_db.select_from(sql)
             print("1. For see previous tuition dates")
             print("2. For see pending payments")
             print("3. For chat with teacher")
-
-            print("4. Exit")
+            print("4. For give rating")
+            print("5. Exit")
             choice = int(input("Enter choice: "))
             if choice == 1:
                 teacherID = int(input("Enter teacher ID: "))
@@ -202,10 +218,13 @@ def selectionStudent(studentID:int = -1):
                     else:
                         print("Invalid choice")
                         choice = int(input("Enter choice: "))     
-
-
-
             elif choice == 4:
+                teacherID = int(input("Enter teacher ID: "))
+                my_db.insert_into("reviews", teacherID, studentID)
+
+
+
+            elif choice == 5:
                 pass
         
         elif choice == 5:
@@ -227,8 +246,10 @@ def selectionTeacher(teacherID:int = -1):
         print("1. For see all the requests")
         print("2. For see you students")
         print("3. For see your Notifications")
-        print("4. For see you account")
-        print("5. Exit")
+        print("4. For see your bank account")
+        print("5. For see your current ratings")
+        print("6. For see reviews")
+        print("7. Exit")
         choice = int(input("Enter choice: "))
         if choice == 1:
             sql = f"SELECT users.id, users.name, users.email, users.phone, students.institution, students.address, requests.send_at FROM requests INNER JOIN users ON requests.student_id = users.id INNER JOIN students ON requests.student_id = students.user_id WHERE requests.teacher_id = {teacherID}"
@@ -324,8 +345,15 @@ def selectionTeacher(teacherID:int = -1):
         elif choice == 4:
             sql = f"select balance from account where user_id = {teacherID}"
             my_db.select_from(sql)
-            
+        
         elif choice == 5:
+            sql = f"select avg(rating) rating from reviews where teacher_id = {teacherID}"
+            my_db.select_from(sql)
+
+        elif choice == 6:
+            sql = f"select u.name, r.rating, r.review from reviews r join users u on r.student_id = u.id where r.teacher_id = {teacherID}"
+            my_db.select_from(sql)
+        elif choice == 7:
             break
         else:
             print("Invalid choice")

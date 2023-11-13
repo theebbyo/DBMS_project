@@ -121,6 +121,13 @@ class MyDbDriver(DbDriver):
                 "balance": 0
             }
             
+            reviewData = {
+                "id": random.randint(1,100000),
+                "teacher_id": userID,
+                "student_id": userID,
+                "review": "No review yet",
+
+            }
             
             if self.cursor:
                 try:
@@ -157,6 +164,14 @@ class MyDbDriver(DbDriver):
                     print("Record inserted successfully into table Account table")
                 except:
                     print("Failed to insert record into table: {}".format(error))
+                try:
+                    query = "INSERT INTO reviews (id, teacher_id, student_id, review) VALUES (%(id)s, %(teacher_id)s, %(student_id)s, %(review)s)"
+                    self.cursor.execute(query, reviewData)
+                    self.connection.commit()
+                    print("Record inserted successfully into table Reviews table")
+                except:
+                    print("Failed to insert record into table: {}".format(error))
+
         
                     
         elif table == "requests":
@@ -491,7 +506,38 @@ class MyDbDriver(DbDriver):
                     print("No tuition found")
             except mysql.connector.Error as error:
                 print("Failed to insert record into table: {}".format(error))
-            
+        
+        elif table == "reviews":
+            try:
+                reviewData = {
+                    "id": random.randint(1,100000),
+                    "teacher_id": teacherID,
+                    "student_id": studentID,
+                    "rating": input("Enter rating out of 5: "),
+                    "review": input("Enter review: ")
+                }
+                query = "INSERT INTO reviews (id, teacher_id, student_id, rating, review) VALUES (%(id)s, %(teacher_id)s, %(student_id)s, %(rating)s, %(review)s)"
+                self.cursor.execute(query, reviewData)
+                self.connection.commit()
+                print("Record inserted successfully into table Reviews table")
+                notificationData = {
+                    "id": random.randint(1,100000),
+                    "teacher_id": teacherID,
+                    "student_id": studentID,
+                    "message":"You have a new review",
+                    "toShow": "TEACHER" 
+                }
+                query = "INSERT INTO notifications (id, teacher_id, student_id, message, toShow) VALUES (%(id)s, %(teacher_id)s, %(student_id)s, %(message)s, %(toShow)s)"
+                self.cursor.execute(query, notificationData)
+                self.connection.commit()
+                print("Record inserted successfully into table Notifications table")
+
+
+
+            except mysql.connector.Error as error:
+                print("Failed to insert record into table: {}".format(error))
+
+           
 
         
         print()

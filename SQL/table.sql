@@ -122,3 +122,15 @@ create table account(
     balance int default 0,
     foreign key (user_id) references users(id)
 ); 
+
+
+create table reviews(
+    id int primary key,
+    teacher_id int,
+    student_id int,
+    review varchar(255),
+    rating float default 5,
+    send_at datetime default current_timestamp,
+    foreign key (student_id) references users(id),
+    foreign key (teacher_id) references users(id)
+);
