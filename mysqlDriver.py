@@ -418,11 +418,24 @@ class MyDbDriver(DbDriver):
                 self.cursor.execute(selectQuery, {"teacher_id": teacherID, "student_id": studentID})
                 result = self.cursor.fetchone()
                 tuitionID = result[0]
+                
+                sql = f"select amount from payments where user_id = {teacherID}"
+                self.cursor.execute(sql)
+                result2 = self.cursor.fetchone()
+                beton = result2[0]
+
+                
+                
                 if result:
                     selectQuery = "select amount from pendingPayements where tuition_id = %(tuition_id)s"
                     self.cursor.execute(selectQuery, {"tuition_id": tuitionID})
                     result = self.cursor.fetchone()
                     amount = result[0]
+                    if amount/beton <12:
+                        print("You can't make payment now")
+                        return
+                    
+                    
                     if result:
                         transaction_id = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
 
@@ -432,6 +445,9 @@ class MyDbDriver(DbDriver):
                             "amount": amount,
                             "transaction_id": transaction_id
                         }
+
+                        
+                        
                         query = "INSERT INTO makePayements (id, tuition_id, amount, transaction_id) VALUES (%(id)s, %(tuition_id)s, %(amount)s, %(transaction_id)s)"
                         self.cursor.execute(query, paymentData)
                         self.connection.commit()
