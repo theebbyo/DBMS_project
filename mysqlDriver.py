@@ -46,7 +46,6 @@ class MyDbDriver(DbDriver):
             
             address = input("Enter address: ")
             userID = random.randint(1,100000)
-            studentID = random.randint(1,100000)
             userData = {
                 "id":userID,
                 "name": name,
@@ -57,7 +56,6 @@ class MyDbDriver(DbDriver):
                 }
             
             studentData = {
-                "id":studentID,
                 "institution": institution,
                 "address": address,
                 "userID": userID
@@ -73,7 +71,7 @@ class MyDbDriver(DbDriver):
                     print("Failed to insert record into table: {}".format(error))
                 
                 try:
-                    query = "INSERT INTO students (id, institution, address, user_id) VALUES (%(id)s, %(institution)s, %(address)s, %(userID)s)"
+                    query = "INSERT INTO students (institution, address, user_id) VALUES (%(institution)s, %(address)s, %(userID)s)"
                     self.cursor.execute(query, studentData)
                     self.connection.commit()
                     print("Record inserted successfully into table Students table")
@@ -89,8 +87,6 @@ class MyDbDriver(DbDriver):
             institution = input("Enter institute: ")
 
             userID = random.randint(1,100000)
-            tutorID = random.randint(1,100000)
-            paymentID = random.randint(1,100000)
             expertize = input("Enter expertize: ")
             Payment = input("Enter payment: ")
             userData = {
@@ -103,20 +99,16 @@ class MyDbDriver(DbDriver):
                 }
             
             tutorData = {
-                "id":tutorID,
                 "institution": institution,
                 "userID": userID,
                 "expertize":expertize
             }
             paymentData = {
-                "id":paymentID,
                 "amount": Payment,
                 "userID": userID
-                
             }
 
             accountData = {
-                "id": random.randint(1,100000),
                 "user_id": userID,
                 "balance": 0
             }
@@ -139,7 +131,7 @@ class MyDbDriver(DbDriver):
                     print("Failed to insert record into table: {}".format(error))
                 
                 try:
-                    query = "INSERT INTO teachers (id, institution, user_id, expertize) VALUES (%(id)s, %(institution)s, %(userID)s, %(expertize)s)"
+                    query = "INSERT INTO teachers (institution, user_id, expertize) VALUES (%(institution)s, %(userID)s, %(expertize)s)"
                     self.cursor.execute(query, tutorData)
                     self.connection.commit()
                     print("Record inserted successfully into table Teachers table")
@@ -149,7 +141,7 @@ class MyDbDriver(DbDriver):
                 
 
                 try:
-                    query = "INSERT INTO payments (id, amount, user_id) VALUES (%(id)s, %(amount)s, %(userID)s)"
+                    query = "INSERT INTO payments (amount, user_id) VALUES (%(amount)s, %(userID)s)"
                     self.cursor.execute(query, paymentData)
                     self.connection.commit()
                     print("Record inserted successfully into table Payments table")
@@ -158,7 +150,7 @@ class MyDbDriver(DbDriver):
                     print("Failed to insert record into table: {}".format(error))
 
                 try:
-                    query = "INSERT INTO account (id, user_id, balance) VALUES (%(id)s, %(user_id)s, %(balance)s)"
+                    query = "INSERT INTO account (user_id, balance) VALUES (%(user_id)s, %(balance)s)"
                     self.cursor.execute(query, accountData)
                     self.connection.commit()
                     print("Record inserted successfully into table Account table")
@@ -457,7 +449,7 @@ class MyDbDriver(DbDriver):
                         paymentData = {
                             "id":id,
                             "tuition_id": tuitionID,
-                            "amount": amount,
+                            "amount": beton*12,
                             "transaction_id": transaction_id
                         }
 
@@ -467,9 +459,10 @@ class MyDbDriver(DbDriver):
                         self.cursor.execute(query, paymentData)
                         self.connection.commit()
                         print("Record inserted successfully into table MakePayements table")
+                        pendingAmount = amount - beton*12
 
-                        updateQuery = "update pendingPayements set amount = 0 where tuition_id = %(tuition_id)s"
-                        self.cursor.execute(updateQuery, {"tuition_id": tuitionID})
+                        updateQuery = "update pendingPayements set amount = %(pendingAmount)s where tuition_id = %(tuition_id)s"
+                        self.cursor.execute(updateQuery, {"pendingAmount": pendingAmount, "tuition_id": tuitionID})
                         self.connection.commit()
                         print("Record updated successfully into table PendingPayments table")
                         id = random.randint(1,100000)

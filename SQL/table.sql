@@ -12,19 +12,17 @@ CREATE TABLE users (
 
 
 create table students (
-    id int  primary key,
     institution varchar(255) not null,
     address varchar(255) not null,
-    user_id int not null,
+    user_id int primary key,
     foreign key (user_id) references users(id)
 );
 
 
 
 create table teachers (
-    id int  primary key,
     institution varchar(255) not null,
-    user_id int not null,
+    user_id int primary key,
     expertize varchar(255) not null,
     foreign key (user_id) references users(id)
 );
@@ -33,9 +31,8 @@ create table teachers (
 
 
 create table payments(
-    id int  primary key,
     amount int not null,
-    user_id int not null,
+    user_id int  primary key,
     foreign key (user_id) references users(id)
 );
 
@@ -76,6 +73,7 @@ create table tuitionDates(
 
 create table pendingPayements(
     id int primary key,
+
     tuition_id int,
     amount int default 0,
     foreign key (tuition_id) references tuitions(id)
@@ -117,8 +115,7 @@ create table makePayements(
 );
 
 create table account(
-    id int primary key,
-    user_id int,
+    user_id int primary key,
     balance int default 0,
     foreign key (user_id) references users(id)
 ); 

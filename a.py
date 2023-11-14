@@ -188,7 +188,6 @@ def selectionStudent(studentID:int = -1):
                 print("2. Exit")
                 choice = int(input("Enter choice: "))
                 if choice == 1:
-                    print("hi")
                     my_db.insert_into("makePayements", teacherID, studentID)
                 elif choice == 2:
                     pass
